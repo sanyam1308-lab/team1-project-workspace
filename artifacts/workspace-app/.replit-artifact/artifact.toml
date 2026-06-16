@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Team 1 Project Workspace"
+version = "1.0.0"
+id = "artifacts/workspace-app"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 21544
+
+[services.development]
+run = "pnpm --filter @workspace/workspace-app run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/workspace-app", "run", "build" ]
+publicDir = "artifacts/workspace-app/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "21544"
+BASE_PATH = "/"
