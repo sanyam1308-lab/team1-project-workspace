@@ -12,6 +12,16 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Progress } from "./ui/progress";
 import { Checkbox } from "./ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import { TEAM_MEMBERS } from "../lib/team";
+
+const UNASSIGNED = "__unassigned__";
 
 export default function ProjectPlan() {
   const queryClient = useQueryClient();
@@ -174,12 +184,24 @@ function TaskRow({ task }: { task: any }) {
         placeholder="Task name"
         className="h-8 rounded-none border-transparent hover:border-input focus-visible:border-input shadow-none bg-transparent font-medium"
       />
-      <Input 
-        value={task.owner || ""} 
-        onChange={(e) => handleUpdate("owner", e.target.value)}
-        placeholder="Owner"
-        className="h-8 rounded-none border-transparent hover:border-input focus-visible:border-input shadow-none bg-transparent text-sm"
-      />
+      <Select
+        value={task.owner ? task.owner : UNASSIGNED}
+        onValueChange={(v) => handleUpdate("owner", v === UNASSIGNED ? "" : v)}
+      >
+        <SelectTrigger className="h-8 rounded-none border-transparent hover:border-input focus:border-input shadow-none bg-transparent text-sm">
+          <SelectValue placeholder="Owner" />
+        </SelectTrigger>
+        <SelectContent className="rounded-none">
+          <SelectItem value={UNASSIGNED} className="rounded-none text-sm">
+            Unassigned
+          </SelectItem>
+          {TEAM_MEMBERS.map((member) => (
+            <SelectItem key={member} value={member} className="rounded-none text-sm">
+              {member}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
       <Input 
         type="date"
         value={task.targetDate || ""} 
