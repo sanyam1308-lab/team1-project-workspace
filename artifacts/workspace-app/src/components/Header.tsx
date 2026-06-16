@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { differenceInDays, parseISO } from "date-fns";
+import { TEAM_MEMBERS } from "../lib/team";
 
 export default function Header() {
   const [daysRemaining, setDaysRemaining] = useState(0);
@@ -47,7 +48,7 @@ export default function Header() {
         <div className="flex flex-col">
           <span className="text-xs uppercase text-muted-foreground font-bold tracking-wider mb-1">Team</span>
           <span className="text-sm font-medium text-foreground">
-            Parish &middot; Rashmi &middot; Riya &middot; Sanyam
+            {TEAM_MEMBERS.join(" \u00b7 ")}
           </span>
         </div>
       </div>
