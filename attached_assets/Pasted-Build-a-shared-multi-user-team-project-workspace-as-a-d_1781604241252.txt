@@ -1,0 +1,58 @@
+Build a shared, multi-user team project workspace as a deployable full-stack web app.
+
+CRITICAL REQUIREMENT — SHARED DATA:
+All data must be stored centrally in a server-side database (use a persistent DB — Postgres or SQLite is fine). Every visitor to the app URL sees the same, up-to-date content. When one person edits something, others see it after a refresh. Implement a lightweight REST API and have the frontend poll the server every ~5 seconds so changes from teammates appear automatically. Do NOT use browser localStorage for shared state — that was the problem with our previous version, where each person only saw their own edits.
+
+No login required: anyone with the URL can view and edit. For attribution on brainstorm ideas, just ask the user to type their name in a field (no accounts).
+
+PURPOSE:
+A workspace for a 4-person team running an internal "AI Team Challenge." It holds our problem statement, a brainstorm board, and a 3-week project plan with progress tracking.
+
+SEED THE APP WITH THIS EXACT CONTENT:
+
+Header:
+- Eyebrow (small, uppercase, red): "AI Team Challenge · Project Workspace"
+- Title: "Team 1 — Revenue QC Root-Cause Agent"
+- Subtitle: "A shared workspace to align on the problem, brainstorm together, and track our build to a working prototype."
+- Meta items:
+  - Demo Day: Fri 17 Jul (show a live countdown of days remaining to 2026-07-17)
+  - Build target: Fri 10 Jul — "Finalise prototype ~1 week before Demo Day"
+  - Team (4 members): Parish · Rashmi · Riya · Sanyam
+
+Section 1 — Problem statement (four editable cards; each has a Save button; persists to server):
+- Situation: "Revenue dashboards go through a regular QC process to catch deviations before they reach stakeholders. Today that QC relies on manually comparing dashboard outputs against the raw data."
+- Complication: "This manual comparison is time-consuming and taxing — but the bigger gap is that it only signals that a deviation exists, not why. Historically, deviations trace back to one of two sources: the source data, or the manual mapping files we maintain. Pinpointing which one is responsible still falls entirely on the user, and that root-cause investigation will continue to be manual."
+- Resolution: "An AI agent that automatically scans for deviations and gives dashboard owners a directional indicator of the likely root cause — flagging whether the issue sits in the source data or the mapping files — so investigation starts with a hypothesis rather than from scratch."
+- Opportunity: "With the update cadence about to move to twice a week, faster QC turnaround becomes more valuable, and this agent directly enables it. It also serves as a foundation that can scale to other R&A teamlets in the future."
+
+Section 2 — Brainstorm board:
+- A form to add an idea: a text box for the idea plus a "Your name" field, and an "Add idea" button.
+- Display ideas as cards, sorted by vote count (highest first). Each card shows the idea text, the author name, an upvote button with a count, and a "Remove" button.
+- All ideas and votes persist on the server and are shared across all users.
+- If there are no ideas, show an empty-state message.
+
+Section 3 — 3-week project plan:
+- Three week blocks, each with a title, date range, and theme:
+  - Week 1 · Mon 15 – Fri 19 Jun · "Frame & gather"
+  - Week 2 · Mon 22 – Fri 26 Jun · "Build the agent"
+  - Week 3 · Mon 29 Jun – Fri 10 Jul · "Integrate, test, finalise"
+- Start each week with an EMPTY task list (no preset tasks). Each week has a "+ Add task" button.
+- Each task is a row with: a done checkbox, an editable task name, an editable owner, and an editable target date. Editing any field saves to the server. Each task also has a delete option.
+- Show overall progress: a percentage and a progress bar (tasks done / total), plus a per-week "X / Y done" count.
+- A "Reset plan" button restores the three empty week blocks above (with confirmation).
+
+Section 4 — Scoring rubric reference (read-only tiles, 100 points total):
+- AI Use & Depth — 35 pts — "Did AI do meaningful work? Highest weight."
+- Working Quality — 20 pts — "Does it actually work live?"
+- Impact & Outcome — 20 pts — "Can we quantify the improvement?"
+- Clarity of Thinking — 20 pts — "Can each of us explain our AI choices?"
+- Problem Relevance — 5 pts — "Is this worth solving for the org?"
+
+DESIGN:
+Clean, corporate, professional. Font: Arial / Helvetica / sans-serif. Colors: red accent #CC0000 (used for eyebrows, primary buttons, progress bar, key figures), near-black #121212 for text and headings, neutral greys (#F9F9F9 light backgrounds, #ECECEC / #CCCCCC borders), white cards with a subtle soft shadow. Section labels (eyebrows) are small, bold, uppercase, red. Buttons are rectangular (not pill-shaped) with uppercase bold labels. Keep it spacious and minimal. Make it responsive for mobile.
+
+VERSION CONTROL — GITHUB:
+Initialize a git repository for this project and create a new GitHub repository named "team1-project-workspace", then push the code to it. Add a clear README.md that explains what the app is, how to run it locally, the environment variables needed (e.g. the database connection), and how to deploy. Include a sensible .gitignore (node_modules, env files, build artifacts). Commit the initial working version with the message "Initial commit: Team 1 project workspace". If creating the GitHub repo requires me to connect or authorize my GitHub account, pause and tell me exactly what to click.
+
+DEPLOYMENT:
+Make this deployable on Replit and give me the shareable URL so I can send it to my team.

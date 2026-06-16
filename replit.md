@@ -1,6 +1,6 @@
-# [Project name]
+# Team 1 — Revenue QC Root-Cause Agent · Project Workspace
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+A shared, no-login team workspace where a 4-person team aligns on their problem statement, brainstorms ideas (with voting), and tracks a 3-week project plan — all backed by a central Postgres DB so every visitor sees the same live data (frontend polls every ~5s).
 
 ## Run & Operate
 
@@ -22,23 +22,31 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- Frontend: `artifacts/workspace-app/src` (single page at `/`, components under `src/components`)
+- API routes: `artifacts/api-server/src/routes` (`problem.ts`, `ideas.ts`, `plan.ts`)
+- API contract (source of truth): `lib/api-spec/openapi.yaml` → codegen into `lib/api-client-react` (hooks) and `lib/api-zod` (schemas)
+- DB schema (source of truth): `lib/db/src/schema` (`problemCards.ts`, `ideas.ts`, `tasks.ts`)
+- Theme/colors: `artifacts/workspace-app/src/index.css`
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- No auth by design — anyone with the URL can view/edit; brainstorm attribution is a free-text name field only.
+- Shared state lives in Postgres; the frontend polls (`refetchInterval: 5000`) so teammates' edits appear without manual refresh. No localStorage for shared state.
+- Problem cards are seeded rows keyed by `situation/complication/resolution/opportunity`; content is editable but rows are fixed.
+- The 3-week plan's week metadata (title, date range, theme) is static in `plan.ts`; only tasks are stored in the DB. Tasks start empty; "Reset plan" deletes all tasks.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+A shared team workspace: editable problem-statement cards, a brainstorm board with voting, a 3-week task plan with progress tracking, and a read-only scoring rubric, plus a live Demo Day countdown.
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+- Design: clean/corporate — red accent #CC0000, near-black #121212 text, neutral greys, white cards, rectangular uppercase-bold buttons, Arial/Helvetica/sans-serif. No emojis in the UI.
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- After changing any `lib/*` package (db schema, spec), run `pnpm run typecheck:libs` before leaf typechecks, or artifacts see stale declarations.
+- After editing `openapi.yaml`, re-run `pnpm --filter @workspace/api-spec run codegen`.
 
 ## Pointers
 

@@ -1,0 +1,1 @@
+- [GitHub push via API](github-push-via-api.md) — publish/update a GitHub repo without local destructive git; use the connector token + Git Data API.

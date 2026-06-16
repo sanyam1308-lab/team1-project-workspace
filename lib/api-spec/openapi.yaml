@@ -10,6 +10,12 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: problem
+    description: Problem statement cards
+  - name: ideas
+    description: Brainstorm board ideas
+  - name: plan
+    description: Project plan weeks and tasks
 paths:
   /healthz:
     get:
@@ -24,6 +30,216 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /problem-cards:
+    get:
+      operationId: listProblemCards
+      tags: [problem]
+      summary: List problem statement cards
+      responses:
+        "200":
+          description: List of problem cards
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProblemCard"
+  /problem-cards/{key}:
+    patch:
+      operationId: updateProblemCard
+      tags: [problem]
+      summary: Update a problem card's content
+      parameters:
+        - name: key
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProblemCardUpdate"
+      responses:
+        "200":
+          description: Updated card
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemCard"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /ideas:
+    get:
+      operationId: listIdeas
+      tags: [ideas]
+      summary: List brainstorm ideas sorted by votes
+      responses:
+        "200":
+          description: List of ideas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Idea"
+    post:
+      operationId: createIdea
+      tags: [ideas]
+      summary: Add a new idea
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IdeaInput"
+      responses:
+        "201":
+          description: Created idea
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Idea"
+  /ideas/{id}:
+    delete:
+      operationId: deleteIdea
+      tags: [ideas]
+      summary: Remove an idea
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /ideas/{id}/upvote:
+    post:
+      operationId: upvoteIdea
+      tags: [ideas]
+      summary: Upvote an idea
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Updated idea
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Idea"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /plan:
+    get:
+      operationId: getPlan
+      tags: [plan]
+      summary: Get the full project plan with weeks, tasks, and progress
+      responses:
+        "200":
+          description: The project plan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Plan"
+  /plan/reset:
+    post:
+      operationId: resetPlan
+      tags: [plan]
+      summary: Reset the plan to the three empty default weeks
+      responses:
+        "200":
+          description: The reset project plan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Plan"
+  /tasks:
+    post:
+      operationId: createTask
+      tags: [plan]
+      summary: Add a task to a week
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskInput"
+      responses:
+        "201":
+          description: Created task
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+  /tasks/{id}:
+    patch:
+      operationId: updateTask
+      tags: [plan]
+      summary: Update a task's fields
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskUpdate"
+      responses:
+        "200":
+          description: Updated task
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      operationId: deleteTask
+      tags: [plan]
+      summary: Delete a task
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   schemas:
     HealthStatus:
@@ -33,4 +249,128 @@ components:
           type: string
       required:
         - status
-
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+    ProblemCard:
+      type: object
+      required: [key, label, content]
+      properties:
+        key:
+          type: string
+        label:
+          type: string
+        content:
+          type: string
+    ProblemCardUpdate:
+      type: object
+      required: [content]
+      properties:
+        content:
+          type: string
+    Idea:
+      type: object
+      required: [id, text, author, votes, createdAt]
+      properties:
+        id:
+          type: integer
+        text:
+          type: string
+        author:
+          type: string
+        votes:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+    IdeaInput:
+      type: object
+      required: [text, author]
+      properties:
+        text:
+          type: string
+          minLength: 1
+        author:
+          type: string
+          minLength: 1
+    Task:
+      type: object
+      required: [id, weekNumber, name, owner, targetDate, done, position]
+      properties:
+        id:
+          type: integer
+        weekNumber:
+          type: integer
+        name:
+          type: string
+        owner:
+          type: string
+        targetDate:
+          type: string
+        done:
+          type: boolean
+        position:
+          type: integer
+    TaskInput:
+      type: object
+      required: [weekNumber]
+      properties:
+        weekNumber:
+          type: integer
+          minimum: 1
+          maximum: 3
+        name:
+          type: string
+        owner:
+          type: string
+        targetDate:
+          type: string
+    TaskUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        owner:
+          type: string
+        targetDate:
+          type: string
+        done:
+          type: boolean
+    Week:
+      type: object
+      required: [number, title, dateRange, theme, tasks, doneCount, totalCount]
+      properties:
+        number:
+          type: integer
+        title:
+          type: string
+        dateRange:
+          type: string
+        theme:
+          type: string
+        tasks:
+          type: array
+          items:
+            $ref: "#/components/schemas/Task"
+        doneCount:
+          type: integer
+        totalCount:
+          type: integer
+    Plan:
+      type: object
+      required: [weeks, totalTasks, doneTasks, percentComplete]
+      properties:
+        weeks:
+          type: array
+          items:
+            $ref: "#/components/schemas/Week"
+        totalTasks:
+          type: integer
+        doneTasks:
+          type: integer
+        percentComplete:
+          type: integer
