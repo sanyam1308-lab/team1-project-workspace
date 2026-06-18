@@ -36,12 +36,12 @@ function getConfig(): TableauConfig {
   }
 
   return {
-    pod: pod!,
-    site: process.env.TABLEAU_SITE ?? "",
-    apiVersion: process.env.TABLEAU_API_VERSION || "3.21",
-    patName: patName!,
-    patSecret: patSecret!,
-    datasourceLuid: datasourceLuid!,
+    pod: pod!.trim(),
+    site: (process.env.TABLEAU_SITE ?? "").trim(),
+    apiVersion: (process.env.TABLEAU_API_VERSION || "3.21").trim(),
+    patName: patName!.trim(),
+    patSecret: patSecret!.trim(),
+    datasourceLuid: datasourceLuid!.trim(),
   };
 }
 
