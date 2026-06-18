@@ -83,3 +83,95 @@ export interface Plan {
   percentComplete: number;
 }
 
+export interface QcField {
+  fieldName: string;
+  fieldCaption: string;
+  dataType?: string;
+}
+
+export interface QcConnectionStatus {
+  connected: boolean;
+  datasourceName?: string;
+  fieldCount?: number;
+  fields?: QcField[];
+  error?: string;
+}
+
+export interface QcMetric {
+  id: number;
+  measureField: string;
+  aggregation: string;
+  dimensionField: string;
+  thresholdPct: number;
+  createdAt: string;
+}
+
+export interface QcMetricInput {
+  /** @minLength 1 */
+  measureField: string;
+  aggregation?: string;
+  dimensionField?: string;
+  /** @minimum 0 */
+  thresholdPct?: number;
+}
+
+export interface QcMetricUpdate {
+  /** @minLength 1 */
+  measureField?: string;
+  aggregation?: string;
+  dimensionField?: string;
+  /** @minimum 0 */
+  thresholdPct?: number;
+}
+
+export interface QcRun {
+  id: number;
+  trigger: string;
+  status: string;
+  message: string;
+  metricsPulled: number;
+  deviationsFound: number;
+  startedAt: string;
+}
+
+export interface QcDeviation {
+  id: number;
+  runId: number;
+  metricKey: string;
+  measureField: string;
+  dimensionValue: string;
+  /** @nullable */
+  previousValue?: number | null;
+  /** @nullable */
+  currentValue?: number | null;
+  /** @nullable */
+  pctChange?: number | null;
+  reason: string;
+  likelyCause: string;
+  confidence: string;
+  explanation: string;
+  recommendedCheck: string;
+  createdAt: string;
+}
+
+export interface QcRunResult {
+  run: QcRun;
+  deviations: QcDeviation[];
+}
+
+export type ListQcRunsParams = {
+/**
+ * @minimum 1
+ * @maximum 100
+ */
+limit?: number;
+};
+
+export type ListQcDeviationsParams = {
+/**
+ * @minimum 1
+ * @maximum 100
+ */
+limit?: number;
+};
+

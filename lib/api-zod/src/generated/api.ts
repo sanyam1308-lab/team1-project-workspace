@@ -198,3 +198,203 @@ export const DeleteTaskParams = zod.object({
 })
 
 
+/**
+ * @summary Sign in to Tableau and return the available field list
+ */
+export const TestQcConnectionResponse = zod.object({
+  "connected": zod.boolean(),
+  "datasourceName": zod.string().optional(),
+  "fieldCount": zod.number().optional(),
+  "fields": zod.array(zod.object({
+  "fieldName": zod.string(),
+  "fieldCaption": zod.string(),
+  "dataType": zod.string().optional()
+})).optional(),
+  "error": zod.string().optional()
+})
+
+
+/**
+ * @summary List the monitored metric configurations
+ */
+export const ListQcMetricsResponseItem = zod.object({
+  "id": zod.number(),
+  "measureField": zod.string(),
+  "aggregation": zod.string(),
+  "dimensionField": zod.string(),
+  "thresholdPct": zod.number(),
+  "createdAt": zod.coerce.date()
+})
+export const ListQcMetricsResponse = zod.array(ListQcMetricsResponseItem)
+
+
+/**
+ * @summary Add a monitored metric
+ */
+
+export const createQcMetricBodyThresholdPctMin = 0;
+
+
+
+export const CreateQcMetricBody = zod.object({
+  "measureField": zod.string().min(1),
+  "aggregation": zod.string().optional(),
+  "dimensionField": zod.string().optional(),
+  "thresholdPct": zod.number().min(createQcMetricBodyThresholdPctMin).optional()
+})
+
+
+/**
+ * @summary Update a monitored metric
+ */
+export const UpdateQcMetricParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+export const updateQcMetricBodyThresholdPctMin = 0;
+
+
+
+export const UpdateQcMetricBody = zod.object({
+  "measureField": zod.string().min(1).optional(),
+  "aggregation": zod.string().optional(),
+  "dimensionField": zod.string().optional(),
+  "thresholdPct": zod.number().min(updateQcMetricBodyThresholdPctMin).optional()
+})
+
+export const UpdateQcMetricResponse = zod.object({
+  "id": zod.number(),
+  "measureField": zod.string(),
+  "aggregation": zod.string(),
+  "dimensionField": zod.string(),
+  "thresholdPct": zod.number(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Delete a monitored metric
+ */
+export const DeleteQcMetricParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+/**
+ * @summary Run the QC agent once now (manual trigger)
+ */
+export const RunQcAgentResponse = zod.object({
+  "run": zod.object({
+  "id": zod.number(),
+  "trigger": zod.string(),
+  "status": zod.string(),
+  "message": zod.string(),
+  "metricsPulled": zod.number(),
+  "deviationsFound": zod.number(),
+  "startedAt": zod.coerce.date()
+}),
+  "deviations": zod.array(zod.object({
+  "id": zod.number(),
+  "runId": zod.number(),
+  "metricKey": zod.string(),
+  "measureField": zod.string(),
+  "dimensionValue": zod.string(),
+  "previousValue": zod.number().nullish(),
+  "currentValue": zod.number().nullish(),
+  "pctChange": zod.number().nullish(),
+  "reason": zod.string(),
+  "likelyCause": zod.string(),
+  "confidence": zod.string(),
+  "explanation": zod.string(),
+  "recommendedCheck": zod.string(),
+  "createdAt": zod.coerce.date()
+}))
+})
+
+
+/**
+ * @summary List recent agent runs (most recent first)
+ */
+export const listQcRunsQueryLimitMax = 100;
+
+
+
+export const ListQcRunsQueryParams = zod.object({
+  "limit": zod.coerce.number().min(1).max(listQcRunsQueryLimitMax).optional()
+})
+
+export const ListQcRunsResponseItem = zod.object({
+  "id": zod.number(),
+  "trigger": zod.string(),
+  "status": zod.string(),
+  "message": zod.string(),
+  "metricsPulled": zod.number(),
+  "deviationsFound": zod.number(),
+  "startedAt": zod.coerce.date()
+})
+export const ListQcRunsResponse = zod.array(ListQcRunsResponseItem)
+
+
+/**
+ * @summary List recent deviations (most recent first)
+ */
+export const listQcDeviationsQueryLimitMax = 100;
+
+
+
+export const ListQcDeviationsQueryParams = zod.object({
+  "limit": zod.coerce.number().min(1).max(listQcDeviationsQueryLimitMax).optional()
+})
+
+export const ListQcDeviationsResponseItem = zod.object({
+  "id": zod.number(),
+  "runId": zod.number(),
+  "metricKey": zod.string(),
+  "measureField": zod.string(),
+  "dimensionValue": zod.string(),
+  "previousValue": zod.number().nullish(),
+  "currentValue": zod.number().nullish(),
+  "pctChange": zod.number().nullish(),
+  "reason": zod.string(),
+  "likelyCause": zod.string(),
+  "confidence": zod.string(),
+  "explanation": zod.string(),
+  "recommendedCheck": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+export const ListQcDeviationsResponse = zod.array(ListQcDeviationsResponseItem)
+
+
+/**
+ * @summary Webhook endpoint that triggers an agent run (e.g. Tableau refresh succeeded)
+ */
+export const TableauWebhookResponse = zod.object({
+  "run": zod.object({
+  "id": zod.number(),
+  "trigger": zod.string(),
+  "status": zod.string(),
+  "message": zod.string(),
+  "metricsPulled": zod.number(),
+  "deviationsFound": zod.number(),
+  "startedAt": zod.coerce.date()
+}),
+  "deviations": zod.array(zod.object({
+  "id": zod.number(),
+  "runId": zod.number(),
+  "metricKey": zod.string(),
+  "measureField": zod.string(),
+  "dimensionValue": zod.string(),
+  "previousValue": zod.number().nullish(),
+  "currentValue": zod.number().nullish(),
+  "pctChange": zod.number().nullish(),
+  "reason": zod.string(),
+  "likelyCause": zod.string(),
+  "confidence": zod.string(),
+  "explanation": zod.string(),
+  "recommendedCheck": zod.string(),
+  "createdAt": zod.coerce.date()
+}))
+})
+
+

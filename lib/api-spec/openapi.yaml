@@ -16,6 +16,8 @@ tags:
     description: Brainstorm board ideas
   - name: plan
     description: Project plan weeks and tasks
+  - name: qc
+    description: QC Agent — Tableau pull, deviation detection, Claude root-cause reasoning
 paths:
   /healthz:
     get:
@@ -240,6 +242,166 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /qc/test-connection:
+    post:
+      operationId: testQcConnection
+      tags: [qc]
+      summary: Sign in to Tableau and return the available field list
+      responses:
+        "200":
+          description: Connection result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QcConnectionStatus"
+  /qc/config:
+    get:
+      operationId: listQcMetrics
+      tags: [qc]
+      summary: List the monitored metric configurations
+      responses:
+        "200":
+          description: List of monitored metrics
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/QcMetric"
+    post:
+      operationId: createQcMetric
+      tags: [qc]
+      summary: Add a monitored metric
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QcMetricInput"
+      responses:
+        "201":
+          description: Created metric
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QcMetric"
+  /qc/config/{id}:
+    patch:
+      operationId: updateQcMetric
+      tags: [qc]
+      summary: Update a monitored metric
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QcMetricUpdate"
+      responses:
+        "200":
+          description: Updated metric
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QcMetric"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      operationId: deleteQcMetric
+      tags: [qc]
+      summary: Delete a monitored metric
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /qc/run:
+    post:
+      operationId: runQcAgent
+      tags: [qc]
+      summary: Run the QC agent once now (manual trigger)
+      responses:
+        "200":
+          description: Run result with any detected deviations
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QcRunResult"
+  /qc/runs:
+    get:
+      operationId: listQcRuns
+      tags: [qc]
+      summary: List recent agent runs (most recent first)
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+      responses:
+        "200":
+          description: Recent runs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/QcRun"
+  /qc/deviations:
+    get:
+      operationId: listQcDeviations
+      tags: [qc]
+      summary: List recent deviations (most recent first)
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+      responses:
+        "200":
+          description: Recent deviations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/QcDeviation"
+  /tableau-webhook:
+    post:
+      operationId: tableauWebhook
+      tags: [qc]
+      summary: Webhook endpoint that triggers an agent run (e.g. Tableau refresh succeeded)
+      responses:
+        "200":
+          description: Run result with any detected deviations
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QcRunResult"
 components:
   schemas:
     HealthStatus:
@@ -374,3 +536,150 @@ components:
           type: integer
         percentComplete:
           type: integer
+    QcField:
+      type: object
+      required: [fieldName, fieldCaption]
+      properties:
+        fieldName:
+          type: string
+        fieldCaption:
+          type: string
+        dataType:
+          type: string
+    QcConnectionStatus:
+      type: object
+      required: [connected]
+      properties:
+        connected:
+          type: boolean
+        datasourceName:
+          type: string
+        fieldCount:
+          type: integer
+        fields:
+          type: array
+          items:
+            $ref: "#/components/schemas/QcField"
+        error:
+          type: string
+    QcMetric:
+      type: object
+      required:
+        [id, measureField, aggregation, dimensionField, thresholdPct, createdAt]
+      properties:
+        id:
+          type: integer
+        measureField:
+          type: string
+        aggregation:
+          type: string
+        dimensionField:
+          type: string
+        thresholdPct:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
+    QcMetricInput:
+      type: object
+      required: [measureField]
+      properties:
+        measureField:
+          type: string
+          minLength: 1
+        aggregation:
+          type: string
+        dimensionField:
+          type: string
+        thresholdPct:
+          type: number
+          minimum: 0
+    QcMetricUpdate:
+      type: object
+      properties:
+        measureField:
+          type: string
+          minLength: 1
+        aggregation:
+          type: string
+        dimensionField:
+          type: string
+        thresholdPct:
+          type: number
+          minimum: 0
+    QcRun:
+      type: object
+      required:
+        [id, trigger, status, message, metricsPulled, deviationsFound, startedAt]
+      properties:
+        id:
+          type: integer
+        trigger:
+          type: string
+        status:
+          type: string
+        message:
+          type: string
+        metricsPulled:
+          type: integer
+        deviationsFound:
+          type: integer
+        startedAt:
+          type: string
+          format: date-time
+    QcDeviation:
+      type: object
+      required:
+        [
+          id,
+          runId,
+          metricKey,
+          measureField,
+          dimensionValue,
+          reason,
+          likelyCause,
+          confidence,
+          explanation,
+          recommendedCheck,
+          createdAt,
+        ]
+      properties:
+        id:
+          type: integer
+        runId:
+          type: integer
+        metricKey:
+          type: string
+        measureField:
+          type: string
+        dimensionValue:
+          type: string
+        previousValue:
+          type: [number, "null"]
+        currentValue:
+          type: [number, "null"]
+        pctChange:
+          type: [number, "null"]
+        reason:
+          type: string
+        likelyCause:
+          type: string
+        confidence:
+          type: string
+        explanation:
+          type: string
+        recommendedCheck:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+    QcRunResult:
+      type: object
+      required: [run, deviations]
+      properties:
+        run:
+          $ref: "#/components/schemas/QcRun"
+        deviations:
+          type: array
+          items:
+            $ref: "#/components/schemas/QcDeviation"

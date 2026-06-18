@@ -1,1 +1,2 @@
 - [GitHub push via API](github-push-via-api.md) — publish/update a GitHub repo without local destructive git; use the connector token + Git Data API.
+- [QC Agent snapshot baseline](qc-agent-snapshot-baseline.md) — compare deviations against the immediately previous run's snapshots, not global latest-per-key, or alerts go stale/repeat.

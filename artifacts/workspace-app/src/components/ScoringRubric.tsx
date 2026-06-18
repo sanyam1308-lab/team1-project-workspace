@@ -12,7 +12,7 @@ export default function ScoringRubric() {
   return (
     <section className="space-y-6 pb-12">
       <h2 className="text-xs font-bold uppercase text-primary tracking-widest">
-        4. Scoring Rubric Reference
+        5. Scoring Rubric Reference
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         {rubrics.map((r, i) => (

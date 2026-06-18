@@ -1,0 +1,53 @@
+Extend the EXISTING project workspace app — do not remove or break the current problem statement, brainstorm board, project plan, or scoring sections. Add a new feature: an automated "QC Agent" that pulls data from a published Tableau data source, detects deviations, uses the Anthropic Claude API to reason about the likely root cause, and reports a directional indicator.
+
+=== SECRETS (use Replit Secrets / environment variables — never hard-code) ===
+- TABLEAU_POD            (e.g. 10az — the part of the site URL before .online.tableau.com)
+- TABLEAU_SITE           (the site contentUrl / site name)
+- TABLEAU_API_VERSION    (e.g. 3.21)
+- TABLEAU_PAT_NAME       (Personal Access Token name)
+- TABLEAU_PAT_SECRET     (Personal Access Token secret)
+- TABLEAU_DATASOURCE_LUID (LUID of the published data source feeding the dashboard)
+- ANTHROPIC_API_KEY
+Add a setup check on startup that warns clearly in the logs if any secret is missing.
+
+=== TABLEAU CONNECTION MODULE ===
+1. Sign in: POST https://{TABLEAU_POD}.online.tableau.com/api/{TABLEAU_API_VERSION}/auth/signin
+   Body: credentials with personalAccessTokenName, personalAccessTokenSecret, and the site contentUrl.
+   The response returns an auth token (valid ~120 minutes) and a site id. Cache the token and re-sign-in when it expires.
+2. List available fields (for setup/debug): POST https://{TABLEAU_POD}.online.tableau.com/api/v1/vizql-data-service/read-metadata
+   Header: X-Tableau-Auth: <token>. Body includes the datasourceLuid.
+3. Query data: POST https://{TABLEAU_POD}.online.tableau.com/api/v1/vizql-data-service/query-datasource
+   Header: X-Tableau-Auth: <token>. Body includes the datasourceLuid and the list of fields to fetch. The response is JSON rows.
+Add a "Test connection" function that signs in and returns the field list, so I can confirm it works.
+
+=== WHICH METRICS TO MONITOR ===
+Add a small config (stored in the database, editable from the UI) where I list the fields/metrics to monitor — e.g. a measure like "Revenue" optionally broken down by a dimension like "Region". Default to a single total measure if I haven't configured anything yet.
+
+=== AGENT RUN LOGIC (one "run") ===
+1. Pull the current values of the monitored metrics from Tableau via the query module.
+2. Compare each metric to the most recent saved snapshot in the database (the previous run). Flag a DEVIATION when: the absolute percentage change exceeds a configurable threshold (default 10%), OR a value becomes null/zero/missing.
+3. Save the new pull as the latest snapshot (keep a history of snapshots).
+4. For each deviation, call the Claude API to reason about the likely root cause. Send it: the metric name, previous vs current value and % change, and this context — "Deviations in these revenue dashboards historically come from one of two sources: (a) the raw source data, or (b) the manual mapping files the team maintains. You give a DIRECTIONAL indicator, not a final verdict; a human confirms and fixes."
+   Ask Claude to respond ONLY as JSON:
+   { "likely_cause": "source_data" | "mapping_files" | "unclear",
+     "confidence": "high" | "medium" | "low",
+     "explanation": "one or two plain-language sentences",
+     "recommended_check": "the single first thing the owner should check" }
+   Use model "claude-sonnet-4-6". Parse the JSON safely (strip code fences); on parse failure, store the raw text and mark confidence "low".
+5. Save each deviation + Claude's directional indicator to the database with a timestamp.
+
+=== TRIGGERS ===
+- Scheduled run: set up the agent to run automatically on a schedule. Use a configurable cron (default: weekdays at 07:00). Make this work with Replit Scheduled Deployments / a cron job, and document how I change the schedule.
+- Manual run: a "Run agent now" button in the UI that triggers one run immediately (for testing and the live demo).
+- Webhook (optional but include the endpoint): POST /api/tableau-webhook that triggers a run when called, so a Tableau "datasource refresh succeeded" webhook can drive it later.
+
+=== NEW UI SECTION — "QC Agent" ===
+Add a new section to the existing app, matching the current design (Arial, red #CC0000 accents, near-black text, grey neutrals, white cards, rectangular buttons). It shows:
+- Connection status: "Connected to <data source>" or a clear error, plus a "Test connection" button.
+- The monitored-metrics config (editable).
+- "Run agent now" button, and the time/result of the last run.
+- A list of recent deviations, each as a card: metric, previous → current value and % change, the likely cause (clearly labelled, color the cause — e.g. amber for mapping files, a different tone for source data), the confidence, the explanation, and the recommended check.
+- An empty state when no deviations have been found ("No deviations detected in the last run — all clear.").
+
+=== SECURITY / GIT ===
+Keep all credentials in Secrets only. Ensure .gitignore excludes env files. Update the README with: what the agent does, the secrets to set, how to run/test it, and how to change the schedule. Commit with message "Add QC Agent: Tableau pull + Claude root-cause reasoning".

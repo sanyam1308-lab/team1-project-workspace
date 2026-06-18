@@ -3,6 +3,7 @@ import Header from "../components/Header";
 import ProblemStatement from "../components/ProblemStatement";
 import BrainstormBoard from "../components/BrainstormBoard";
 import ProjectPlan from "../components/ProjectPlan";
+import QcAgent from "../components/QcAgent";
 import ScoringRubric from "../components/ScoringRubric";
 
 export default function Home() {
@@ -15,6 +16,7 @@ export default function Home() {
           <ProblemStatement />
           <BrainstormBoard />
           <ProjectPlan />
+          <QcAgent />
           <ScoringRubric />
         </main>
       </div>

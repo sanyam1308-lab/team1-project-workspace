@@ -24,9 +24,18 @@ import type {
   HealthStatus,
   Idea,
   IdeaInput,
+  ListQcDeviationsParams,
+  ListQcRunsParams,
   Plan,
   ProblemCard,
   ProblemCardUpdate,
+  QcConnectionStatus,
+  QcDeviation,
+  QcMetric,
+  QcMetricInput,
+  QcMetricUpdate,
+  QcRun,
+  QcRunResult,
   Task,
   TaskInput,
   TaskUpdate
@@ -917,5 +926,673 @@ export const useDeleteTask = <TError = ErrorType<Error>,
         TContext
       > => {
       return useMutation(getDeleteTaskMutationOptions(options));
+    }
+
+export const getTestQcConnectionUrl = () => {
+
+
+
+
+  return `/api/qc/test-connection`
+}
+
+/**
+ * @summary Sign in to Tableau and return the available field list
+ */
+export const testQcConnection = async ( options?: RequestInit): Promise<QcConnectionStatus> => {
+
+  return customFetch<QcConnectionStatus>(getTestQcConnectionUrl(),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+export const getTestQcConnectionMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof testQcConnection>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof testQcConnection>>, TError,void, TContext> => {
+
+const mutationKey = ['testQcConnection'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof testQcConnection>>, void> = () => {
+
+
+          return  testQcConnection(requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type TestQcConnectionMutationResult = NonNullable<Awaited<ReturnType<typeof testQcConnection>>>
+
+    export type TestQcConnectionMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Sign in to Tableau and return the available field list
+ */
+export const useTestQcConnection = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof testQcConnection>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof testQcConnection>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getTestQcConnectionMutationOptions(options));
+    }
+
+export const getListQcMetricsUrl = () => {
+
+
+
+
+  return `/api/qc/config`
+}
+
+/**
+ * @summary List the monitored metric configurations
+ */
+export const listQcMetrics = async ( options?: RequestInit): Promise<QcMetric[]> => {
+
+  return customFetch<QcMetric[]>(getListQcMetricsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListQcMetricsQueryKey = () => {
+    return [
+    `/api/qc/config`
+    ] as const;
+    }
+
+
+export const getListQcMetricsQueryOptions = <TData = Awaited<ReturnType<typeof listQcMetrics>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listQcMetrics>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListQcMetricsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listQcMetrics>>> = ({ signal }) => listQcMetrics({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listQcMetrics>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListQcMetricsQueryResult = NonNullable<Awaited<ReturnType<typeof listQcMetrics>>>
+export type ListQcMetricsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List the monitored metric configurations
+ */
+
+export function useListQcMetrics<TData = Awaited<ReturnType<typeof listQcMetrics>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listQcMetrics>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListQcMetricsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getCreateQcMetricUrl = () => {
+
+
+
+
+  return `/api/qc/config`
+}
+
+/**
+ * @summary Add a monitored metric
+ */
+export const createQcMetric = async (qcMetricInput: QcMetricInput, options?: RequestInit): Promise<QcMetric> => {
+
+  return customFetch<QcMetric>(getCreateQcMetricUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      qcMetricInput,)
+  }
+);}
+
+
+
+
+export const getCreateQcMetricMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createQcMetric>>, TError,{data: BodyType<QcMetricInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createQcMetric>>, TError,{data: BodyType<QcMetricInput>}, TContext> => {
+
+const mutationKey = ['createQcMetric'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createQcMetric>>, {data: BodyType<QcMetricInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createQcMetric(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateQcMetricMutationResult = NonNullable<Awaited<ReturnType<typeof createQcMetric>>>
+    export type CreateQcMetricMutationBody = BodyType<QcMetricInput>
+    export type CreateQcMetricMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Add a monitored metric
+ */
+export const useCreateQcMetric = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createQcMetric>>, TError,{data: BodyType<QcMetricInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createQcMetric>>,
+        TError,
+        {data: BodyType<QcMetricInput>},
+        TContext
+      > => {
+      return useMutation(getCreateQcMetricMutationOptions(options));
+    }
+
+export const getUpdateQcMetricUrl = (id: number,) => {
+
+
+
+
+  return `/api/qc/config/${id}`
+}
+
+/**
+ * @summary Update a monitored metric
+ */
+export const updateQcMetric = async (id: number,
+    qcMetricUpdate: QcMetricUpdate, options?: RequestInit): Promise<QcMetric> => {
+
+  return customFetch<QcMetric>(getUpdateQcMetricUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      qcMetricUpdate,)
+  }
+);}
+
+
+
+
+export const getUpdateQcMetricMutationOptions = <TError = ErrorType<Error>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateQcMetric>>, TError,{id: number;data: BodyType<QcMetricUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateQcMetric>>, TError,{id: number;data: BodyType<QcMetricUpdate>}, TContext> => {
+
+const mutationKey = ['updateQcMetric'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateQcMetric>>, {id: number;data: BodyType<QcMetricUpdate>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateQcMetric(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateQcMetricMutationResult = NonNullable<Awaited<ReturnType<typeof updateQcMetric>>>
+    export type UpdateQcMetricMutationBody = BodyType<QcMetricUpdate>
+    export type UpdateQcMetricMutationError = ErrorType<Error>
+
+    /**
+ * @summary Update a monitored metric
+ */
+export const useUpdateQcMetric = <TError = ErrorType<Error>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateQcMetric>>, TError,{id: number;data: BodyType<QcMetricUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateQcMetric>>,
+        TError,
+        {id: number;data: BodyType<QcMetricUpdate>},
+        TContext
+      > => {
+      return useMutation(getUpdateQcMetricMutationOptions(options));
+    }
+
+export const getDeleteQcMetricUrl = (id: number,) => {
+
+
+
+
+  return `/api/qc/config/${id}`
+}
+
+/**
+ * @summary Delete a monitored metric
+ */
+export const deleteQcMetric = async (id: number, options?: RequestInit): Promise<void> => {
+
+  return customFetch<void>(getDeleteQcMetricUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+export const getDeleteQcMetricMutationOptions = <TError = ErrorType<Error>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteQcMetric>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteQcMetric>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['deleteQcMetric'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteQcMetric>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteQcMetric(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteQcMetricMutationResult = NonNullable<Awaited<ReturnType<typeof deleteQcMetric>>>
+
+    export type DeleteQcMetricMutationError = ErrorType<Error>
+
+    /**
+ * @summary Delete a monitored metric
+ */
+export const useDeleteQcMetric = <TError = ErrorType<Error>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteQcMetric>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deleteQcMetric>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+      return useMutation(getDeleteQcMetricMutationOptions(options));
+    }
+
+export const getRunQcAgentUrl = () => {
+
+
+
+
+  return `/api/qc/run`
+}
+
+/**
+ * @summary Run the QC agent once now (manual trigger)
+ */
+export const runQcAgent = async ( options?: RequestInit): Promise<QcRunResult> => {
+
+  return customFetch<QcRunResult>(getRunQcAgentUrl(),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+export const getRunQcAgentMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof runQcAgent>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof runQcAgent>>, TError,void, TContext> => {
+
+const mutationKey = ['runQcAgent'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof runQcAgent>>, void> = () => {
+
+
+          return  runQcAgent(requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RunQcAgentMutationResult = NonNullable<Awaited<ReturnType<typeof runQcAgent>>>
+
+    export type RunQcAgentMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Run the QC agent once now (manual trigger)
+ */
+export const useRunQcAgent = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof runQcAgent>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof runQcAgent>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getRunQcAgentMutationOptions(options));
+    }
+
+export const getListQcRunsUrl = (params?: ListQcRunsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/qc/runs?${stringifiedParams}` : `/api/qc/runs`
+}
+
+/**
+ * @summary List recent agent runs (most recent first)
+ */
+export const listQcRuns = async (params?: ListQcRunsParams, options?: RequestInit): Promise<QcRun[]> => {
+
+  return customFetch<QcRun[]>(getListQcRunsUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListQcRunsQueryKey = (params?: ListQcRunsParams,) => {
+    return [
+    `/api/qc/runs`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getListQcRunsQueryOptions = <TData = Awaited<ReturnType<typeof listQcRuns>>, TError = ErrorType<unknown>>(params?: ListQcRunsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listQcRuns>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListQcRunsQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listQcRuns>>> = ({ signal }) => listQcRuns(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listQcRuns>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListQcRunsQueryResult = NonNullable<Awaited<ReturnType<typeof listQcRuns>>>
+export type ListQcRunsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List recent agent runs (most recent first)
+ */
+
+export function useListQcRuns<TData = Awaited<ReturnType<typeof listQcRuns>>, TError = ErrorType<unknown>>(
+ params?: ListQcRunsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listQcRuns>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListQcRunsQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getListQcDeviationsUrl = (params?: ListQcDeviationsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/qc/deviations?${stringifiedParams}` : `/api/qc/deviations`
+}
+
+/**
+ * @summary List recent deviations (most recent first)
+ */
+export const listQcDeviations = async (params?: ListQcDeviationsParams, options?: RequestInit): Promise<QcDeviation[]> => {
+
+  return customFetch<QcDeviation[]>(getListQcDeviationsUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListQcDeviationsQueryKey = (params?: ListQcDeviationsParams,) => {
+    return [
+    `/api/qc/deviations`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getListQcDeviationsQueryOptions = <TData = Awaited<ReturnType<typeof listQcDeviations>>, TError = ErrorType<unknown>>(params?: ListQcDeviationsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listQcDeviations>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListQcDeviationsQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listQcDeviations>>> = ({ signal }) => listQcDeviations(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listQcDeviations>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListQcDeviationsQueryResult = NonNullable<Awaited<ReturnType<typeof listQcDeviations>>>
+export type ListQcDeviationsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List recent deviations (most recent first)
+ */
+
+export function useListQcDeviations<TData = Awaited<ReturnType<typeof listQcDeviations>>, TError = ErrorType<unknown>>(
+ params?: ListQcDeviationsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listQcDeviations>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListQcDeviationsQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getTableauWebhookUrl = () => {
+
+
+
+
+  return `/api/tableau-webhook`
+}
+
+/**
+ * @summary Webhook endpoint that triggers an agent run (e.g. Tableau refresh succeeded)
+ */
+export const tableauWebhook = async ( options?: RequestInit): Promise<QcRunResult> => {
+
+  return customFetch<QcRunResult>(getTableauWebhookUrl(),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+export const getTableauWebhookMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof tableauWebhook>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof tableauWebhook>>, TError,void, TContext> => {
+
+const mutationKey = ['tableauWebhook'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof tableauWebhook>>, void> = () => {
+
+
+          return  tableauWebhook(requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type TableauWebhookMutationResult = NonNullable<Awaited<ReturnType<typeof tableauWebhook>>>
+
+    export type TableauWebhookMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Webhook endpoint that triggers an agent run (e.g. Tableau refresh succeeded)
+ */
+export const useTableauWebhook = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof tableauWebhook>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof tableauWebhook>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getTableauWebhookMutationOptions(options));
     }
 
