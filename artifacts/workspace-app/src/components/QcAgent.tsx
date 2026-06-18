@@ -64,7 +64,7 @@ export default function QcAgent() {
     <section className="space-y-6">
       <div className="space-y-2">
         <h2 className="text-xs font-bold uppercase text-primary tracking-widest">
-          4. QC Agent
+          QC Agent
         </h2>
         <p className="text-sm text-muted-foreground max-w-3xl">
           Pulls monitored metrics from the published Tableau data source,
