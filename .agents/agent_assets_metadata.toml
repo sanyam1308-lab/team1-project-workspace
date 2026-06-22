@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "6dznW1ojHaDnAr4MFyTKI"
+uri = "file://QC_Agent_KPI_Template.xlsx"
+type = "table"
+title = "QC Agent — KPI Definition Template"
