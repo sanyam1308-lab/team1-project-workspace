@@ -1,3 +1,4 @@
 - [GitHub push via API](github-push-via-api.md) — publish/update a GitHub repo without local destructive git; use the connector token + Git Data API.
+- [QC Agent v2 design](qc-agent-v2-design.md) — agreed (unbuilt) multi-view design: temporal + reconciliation checks; raw Hyper published & queried via VizQL (Path A), calc-neutral compare, owner email reports.
 - [Secrets require workflow restart](secrets-require-workflow-restart.md) — updated secrets don't reach a running server until its workflow restarts; bash diagnostics read fresh values and mask the staleness.
 - [QC Agent snapshot baseline](qc-agent-snapshot-baseline.md) — compare deviations against the immediately previous run's snapshots, not global latest-per-key, or alerts go stale/repeat.
